@@ -21,24 +21,47 @@ namespace CodePulse.API.Controllers
 		public async Task<IActionResult> CreateCategory(CreateCategoryRequestDto request)
 		{
 			//Map DTO to Domain Model
-			var category = new Category
-			{
-				Name = request.Name,
-				UrlHandel = request.UrlHandel
-			};
+			//var category = new Category
+			//{
+			//	Name = request.Name,
+			//	UrlHandel = request.UrlHandel
+			//};
+
+			Category obj = new Category();
+			obj.Name = request.Name;
+			obj.UrlHandel = request.UrlHandel;
+
 
 			//await dBContext.Categories.AddAsync(category);
 			//await dBContext.SaveChangesAsync();
 
-			await categoryRepository.CreateAsync(category);
+			//await categoryRepository.CreateAsync(category);
+			await categoryRepository.CreateAsync(obj);
 
 			//Map Domain Model to Dto
 			var response = new CategoryDto
 			{
-				Id = category.Id,
+				Id = obj.Id,
 				Name = request.Name,
 				UrlHandel = request.UrlHandel
 			};
+
+			return Ok(response);
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetAllCategories()
+		{
+			var categories = await categoryRepository.GetAllAsync();
+			var response = categories.Select(c => new CategoryDto
+			{
+				Id = c.Id,
+				Name = c.Name,
+				UrlHandel = c.UrlHandel
+			}).ToList();
+
+			Console.WriteLine(response.Count());   // Triggers SQL query #1
+			Console.WriteLine(response.First().Name); // Triggers SQL query #2
 
 			return Ok(response);
 		}

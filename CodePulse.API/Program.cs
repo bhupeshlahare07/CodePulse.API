@@ -2,6 +2,7 @@ using CodePulse.API.Data;
 using CodePulse.API.Repositories.Implementation;
 using CodePulse.API.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionString"));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionString")).EnableSensitiveDataLogging()   // optional, shows parameter values
+		   .LogTo(Console.WriteLine, LogLevel.Information); // log SQL to console
 });
 
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
