@@ -60,9 +60,26 @@ namespace CodePulse.API.Controllers
 				UrlHandel = c.UrlHandel
 			}).ToList();
 
-			Console.WriteLine(response.Count());   // Triggers SQL query #1
-			Console.WriteLine(response.First().Name); // Triggers SQL query #2
+			//Console.WriteLine(response.Count());   // Triggers SQL query #1
+			//Console.WriteLine(response.First().Name); // Triggers SQL query #2
 
+			return Ok(response);
+		}
+		[HttpPost]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
+		{
+			var category = await categoryRepository.GetByIdAsync(id);
+			if (category == null)
+			{
+				return NotFound();
+			}
+			var response = new CategoryDto
+			{
+				Id = category.Id,
+				Name = category.Name,
+				UrlHandel = category.UrlHandel
+			};
 			return Ok(response);
 		}
 	}
