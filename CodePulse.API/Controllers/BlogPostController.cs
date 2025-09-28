@@ -10,11 +10,13 @@ namespace CodePulse.API.Controllers
     public class BlogPostController : Controller
     {
         private readonly IBlogPostRepository blogPostRepository;
+		private readonly ICategoryRepository categoryRepository;
 
-        public BlogPostController(IBlogPostRepository blogPostRepository)
+		public BlogPostController(IBlogPostRepository blogPostRepository,ICategoryRepository categoryRepository)
         {
             this.blogPostRepository = blogPostRepository;
-        }
+			this.categoryRepository = categoryRepository;
+		}
 
         [HttpPost]
         public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
@@ -29,8 +31,19 @@ namespace CodePulse.API.Controllers
                 PublishedDate = request.PublishedDate,
                 Author = request.Author,
                 FeaturedImageUrl = request.FeaturedImageUrl,
-                Isvisible = request.Isvisible
+                Isvisible = request.Isvisible,
+                Categories = new List<Category>()
+
             };
+            foreach (var categoryGuid in request.Category)
+            {
+                var existingCategory = await categoryRepository.GetByIdAsync(categoryGuid);
+                if (existingCategory is not null)
+                {
+                    blogPost.Categories.Add(existingCategory);
+                }
+            }
+
             blogPost = await blogPostRepository.CreateAsync(blogPost);
 
             //Convert Domain Model to Dto
@@ -44,7 +57,13 @@ namespace CodePulse.API.Controllers
                 PublishedDate = blogPost.PublishedDate,
                 Author = blogPost.Author,
                 FeaturedImageUrl = blogPost.FeaturedImageUrl,
-                Isvisible = blogPost.Isvisible
+                Isvisible = blogPost.Isvisible,
+                Categories = blogPost.Categories.Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    UrlHandel = c.UrlHandel
+                }).ToList()
             };
             return Ok(response);
         }
