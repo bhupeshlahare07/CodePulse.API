@@ -35,7 +35,7 @@ namespace CodePulse.API.Controllers
                 Categories = new List<Category>()
 
             };
-            foreach (var categoryGuid in request.Category)
+            foreach (var categoryGuid in request.Categories)
             {
                 var existingCategory = await categoryRepository.GetByIdAsync(categoryGuid);
                 if (existingCategory is not null)

@@ -10,6 +10,6 @@
         public DateTime? PublishedDate { get; set; }
         public string Author { get; set; }
         public bool Isvisible { get; set; }
-		public Guid[] Category { get; set; }
+		public Guid[] Categories { get; set; }
 	}
 }
