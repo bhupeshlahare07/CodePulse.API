@@ -10,13 +10,13 @@ namespace CodePulse.API.Controllers
     public class BlogPostController : Controller
     {
         private readonly IBlogPostRepository blogPostRepository;
-		private readonly ICategoryRepository categoryRepository;
+        private readonly ICategoryRepository categoryRepository;
 
-		public BlogPostController(IBlogPostRepository blogPostRepository,ICategoryRepository categoryRepository)
+        public BlogPostController(IBlogPostRepository blogPostRepository, ICategoryRepository categoryRepository)
         {
             this.blogPostRepository = blogPostRepository;
-			this.categoryRepository = categoryRepository;
-		}
+            this.categoryRepository = categoryRepository;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
@@ -91,6 +91,35 @@ namespace CodePulse.API.Controllers
                     UrlHandel = c.UrlHandel
                 }).ToList()
             }).ToList();
+            return Ok(response);
+        }
+        [HttpGet]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> GetBlogPostById([FromRoute] Guid id)
+        {
+            var blogPost = await blogPostRepository.GetByIdAsync(id);
+            if (blogPost is null)
+            {
+                return NotFound();
+            }
+            var response = new BlogPostDto
+            {
+                Id = blogPost.Id,
+                Title = blogPost.Title,
+                ShortDescription = blogPost.ShortDescription,
+                Content = blogPost.Content,
+                UrlHandle = blogPost.UrlHandle,
+                PublishedDate = blogPost.PublishedDate,
+                Author = blogPost.Author,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                Isvisible = blogPost.Isvisible,
+                Categories = blogPost.Categories.Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    UrlHandel = c.UrlHandel
+                }).ToList()
+            };
             return Ok(response);
         }
     }
