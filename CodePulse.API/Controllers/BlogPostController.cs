@@ -122,5 +122,62 @@ namespace CodePulse.API.Controllers
             };
             return Ok(response);
         }
+
+        [HttpPut]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> UpdateBlogPostById([FromRoute] Guid id, UpdateBlogPostRequestDto request)
+        {
+            //convert DTO to Domain model
+            var blogPost = new BlogPost
+            {
+                Id = id,
+                Title = request.Title,
+                ShortDescription = request.ShortDescription,
+                Content = request.Content,
+                UrlHandle = request.UrlHandle,
+                PublishedDate = request.PublishedDate,
+                Author = request.Author,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                Isvisible = request.Isvisible,
+                Categories = new List<Category>()
+            };
+
+            foreach (var categoryGuid in request.Categories)
+            {
+                var existingCategory = await categoryRepository.GetByIdAsync(categoryGuid);
+
+                if (existingCategory != null)
+                {
+                    blogPost.Categories.Add(existingCategory);
+                }
+            }
+
+            var updatedBlogPost = await blogPostRepository.UpdateByIdAsync(blogPost);
+            if (updatedBlogPost == null)
+            {
+                return NotFound();
+            }
+
+            //convert domain model back to Dto
+            var response = new BlogPostDto
+            {
+                Id = blogPost.Id,
+                Title = blogPost.Title,
+                ShortDescription = blogPost.ShortDescription,
+                Content = blogPost.Content,
+                UrlHandle = blogPost.UrlHandle,
+                PublishedDate = blogPost.PublishedDate,
+                Author = blogPost.Author,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                Isvisible = blogPost.Isvisible,
+                Categories = blogPost.Categories.Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    UrlHandel = c.UrlHandel
+                }).ToList()
+            };
+            return Ok(response);
+        }
     }
 }
