@@ -179,5 +179,35 @@ namespace CodePulse.API.Controllers
             };
             return Ok(response);
         }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteBlogPostById([FromRoute] Guid id)
+        {
+            var deletedBlogPost = await blogPostRepository.DeleteByIdAsync(id);
+            if (deletedBlogPost == null)
+            {
+                return NotFound();
+            }
+            var response = new BlogPostDto
+            {
+                Id = deletedBlogPost.Id,
+                Title = deletedBlogPost.Title,
+                ShortDescription = deletedBlogPost.ShortDescription,
+                Content = deletedBlogPost.Content,
+                UrlHandle = deletedBlogPost.UrlHandle,
+                PublishedDate = deletedBlogPost.PublishedDate,
+                Author = deletedBlogPost.Author,
+                FeaturedImageUrl = deletedBlogPost.FeaturedImageUrl,
+                Isvisible = deletedBlogPost.Isvisible,
+                Categories = deletedBlogPost.Categories.Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    UrlHandel = c.UrlHandel
+                }).ToList()
+            };
+            return Ok(response);
+        }
     }
 }
