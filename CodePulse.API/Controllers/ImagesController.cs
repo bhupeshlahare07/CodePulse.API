@@ -27,7 +27,7 @@ namespace CodePulse.API.Controllers
 				var blogImage = new BlogImage
 				{
 					FileName = fileName,
-					FileExtension = Path.GetExtension(file.FileName),
+					FileExtension = Path.GetExtension(file.FileName).ToLower(),
 					Title = Title,
 					DateCreated = DateTime.UtcNow
 				};
