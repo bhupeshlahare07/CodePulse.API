@@ -27,4 +27,4 @@ jobs:
     - name: Build
       run: msbuild CodePulse.API.sln /p:Configuration=Release /p:RestorePackages=false
     - name: Test
-      run: dotnet test CodePulse.API.sln --configuration Release --no-build --verbosity normal
+      run: dotnet test CodePulse.API/CodePulse.API.csproj --configuration Release --no-build --verbosity normal
