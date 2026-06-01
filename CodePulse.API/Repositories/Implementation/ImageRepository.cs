@@ -19,6 +19,11 @@ namespace CodePulse.API.Repositories.Implementation
 			_httpContextAccessor = httpContextAccessor;
 		}
 
+		public async Task<IEnumerable<BlogImage>> GetAall()
+		{
+			return await _dbContext.BlogImages.ToListAsync();
+		}
+
 		public async Task<BlogImage> Upload(IFormFile file, BlogImage blogImage)
 		{
 			//1. Save the file to wwwroot/images

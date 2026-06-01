@@ -18,6 +18,22 @@ namespace CodePulse.API.Controllers
 			_imageRepository = imageRepository;
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> GetAllImages()
+		{ 
+			var images = await _imageRepository.GetAall();
+			var response = images.Select(image => new BlogImageDto
+			{
+				Id = image.Id,
+				FileName = image.FileName,
+				FileExtension = image.FileExtension,
+				Title = image.Title,
+				Url = image.Url,
+				DateCreated = image.DateCreated
+			}).ToList();
+			return Ok(response);
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> UploadImage([FromForm] IFormFile file, [FromForm] string fileName, [FromForm] string Title)
 		{
